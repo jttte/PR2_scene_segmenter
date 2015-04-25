@@ -1,0 +1,33 @@
+<launch>
+  <!--Arguments that can be passed into the launch from the cmd line-->
+  <arg name="gui" default="true"/>
+  <arg name="paused" default="false"/>
+
+  <!--Parameters to be placed on the ros param server-->
+  <param name="/use_sim_time" value="true" />
+
+  <!--Start up the gazebo simulator with the PR2 robot inside it-->
+  <include file="$(find pr2_gazebo)/launch/pr2_empty_world.launch"/>
+
+   <!--Start up moveit in order to plan arm trajectories-->
+  <include file="$(find pr2_moveit_config)/launch/move_group.launch"/>
+
+  <!-- Add table to the world -->
+  <node name="spawn_table" pkg="gazebo_ros" type="spawn_model" 
+   args="-urdf -file $(find system_launch)/models/table.urdf -model table -x 1.47 -y 0.22"
+   respawn="false" output="screen" />
+
+
+   <!-- Add xylophone to the world -->
+  <node name="xylphone" pkg="gazebo_ros" type="spawn_model" 
+   args="-urdf -file $(find system_launch)/models/xylphone.urdf -model xylophone -x 1.21 -y -0.43 -z 0.62"
+   respawn="false" output="screen" />
+
+
+
+  <!-- Add stick can to the world -->
+  <node name="spawn_object" pkg="gazebo_ros" type="spawn_model" 
+   args="-urdf -file $(find system_launch)/models/stick.urdf -model stick -x -0.067 -y -0.0045 -z 0.85"
+   respawn="false" output="screen" />
+
+</launch>
