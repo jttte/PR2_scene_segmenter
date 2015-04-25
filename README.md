@@ -1,61 +1,14 @@
-# COMS 6998-03 HUMANOID ROBOTS, SPRING 2015
-# Columbia University
+# Columbia University COMS 6998-03 HUMANOID ROBOTS final project, SPRING 2015
 
-
-## Getting Started
-
-The following lines will not work unless ROS is properly installed.  You can find instructions for how to do this from the ros_tutorial pdf on the class website.
-
+## Running the code
+bring up Gazebo and the PR2 (Moveit, too. but it's not used in this part of the project)
 ```bash
-$ cd ~
-$ git clone git@github.com:HumanoidRobotics/challenge_problem_1.git
-$ cd challenge_problem_1
-$ source /opt/ros/hydro/setup.bash
-$ catkin_make
-$ source devel/setup.bash
+$ roslaunch system_launch pr2_gazebo.launch
 ```
 
-## Running the Demo code
-First, bring up Gazebo, Moveit and the PR2
+Then run the demo with :
 ```bash
-$ roslaunch system_launch pr2_gazebo_moveit.launch
+$ rosrun scene_segmenter scene_segmenter_node
 ```
 
-Then run the individual demos with any of the following:
-```bash
-$ rosrun move_arm move_arm
-$ rosrun move_base move_base
-$ rosrun move_gripper move_gripper
-$ rosrun move_head move_head
-```
-
-##Optional Challenge Problem
-
-Your code will go in either pickup_object.cpp or pickup_object.py in the pickup_object package.  We have provided the
-move_* packages to provide code to get you started.  Please make sure that the correct line is uncommented in the pickup_object.launch
-file depending on whether you use python or C++.
-
-In order to test your code, please run:
-```bash
-$ roslaunch system_launch pr2_gazebo_moveit.launch
-```
-
-Then:
-```bash
-$ rosrun pickup_object pickup_object
-```
-Or if using Python:
-
-```bash
-$ rosrun pickup_object pickup_object.py
-```
-
-Or you can run everythign at once by running:
-```bash
-$ roslaunch system_launch challenge_1.launch
-```
-
-The goal of this challenge is to have the PR2 navigate to the table, and pick the cup off the table.  It is ok if the cup
-falls out of the PR2's gripper after several seconds. This is entirely optional, but a good way to learn about different components of a ROS system.
-
-
+The subscriber in this node constantly listerns to "/head_mount_kinect/depth/points" and get the point cloud from kinect. We then segment the point cloud and analyze it with PCL.
