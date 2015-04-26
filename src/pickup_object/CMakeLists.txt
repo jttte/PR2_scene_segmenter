@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(scene_segmenter)
+project(pickup_object)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS sensor_msgs roscpp roslib geometry_msgs)
+find_package(catkin REQUIRED roscpp)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-find_package(PCL REQUIRED)
+
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -77,8 +77,8 @@ find_package(PCL REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES scene_segmenter
-  CATKIN_DEPENDS perception_msgs
+#  LIBRARIES pickup_object
+#  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
 
@@ -88,51 +88,24 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(
-	include
-	include/cluster_extraction
-	${PCL_INCLUDE_DIRS}
-	)
-
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
+# include_directories(include)
 
 ## Declare a cpp library
-add_library(scene_segmenter
-   src/cluster_extraction/cluster_extractor.cpp
- )
+# add_library(pickup_object
+#   src/${PROJECT_NAME}/pickup_object.cpp
+# )
 
 ## Declare a cpp executable
-add_executable(scene_segmenter_node src/scene_segmenter_node.cpp)
-add_executable(scene_client_node src/scene_client_node.cpp)
-
-#add_executable(test_scene_segmenter_node test/test_scene_segmenter_node.cpp)
+add_executable(pickup_object src/pickup_object.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(scene_segmenter_node scene_segmenter_generate_messages_cpp)
-add_dependencies(scene_segmenter_node perception_msgs_generate_messages_cpp)
-#add_dependencies(scene_client_node perception_msgs_generate_messages_cpp)
+# add_dependencies(pickup_object_node pickup_object_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(scene_segmenter_node
- 	scene_segmenter
-   	${catkin_LIBRARIES} 
-   	${PCL_LIBRARIES}
- )
-
- target_link_libraries(scene_client_node
- 	scene_segmenter
-   	${catkin_LIBRARIES} 
-   	${PCL_LIBRARIES}
- )
-
-# target_link_libraries(test_scene_segmenter_node
-# 	scene_segmenter
-#   	${catkin_LIBRARIES} 
-#   	${PCL_LIBRARIES}
-#   	gtest
-# )
+ target_link_libraries(pickup_object
+   ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
@@ -149,7 +122,7 @@ add_dependencies(scene_segmenter_node perception_msgs_generate_messages_cpp)
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS scene_segmenter scene_segmenter_node
+# install(TARGETS pickup_object pickup_object_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -174,7 +147,7 @@ add_dependencies(scene_segmenter_node perception_msgs_generate_messages_cpp)
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_scene_segmenter.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_pickup_object.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

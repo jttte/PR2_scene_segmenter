@@ -99,9 +99,9 @@ namespace scene_segmenter_node
                 pose.position.z = centroid.z();
                 segmentedObjectsPublisher.publish(pose);
                 std::cout<<"x: "<<pose.position.x<<" y: "<<pose.position.y<<" z: "<<pose.position.z<<std::endl;
-            //std::stringstream ss;
-            //ss<< "cloud_cluster_"<< idx<<".pcd";
-            //writer.write<pcl::PointXYZ> (ss.str(), *cloudCluster, false);
+            std::stringstream ss;
+            ss<< "cloud_cluster_"<< idx<<".pcd";
+            writer.write<pcl::PointXYZ> (ss.str(), *cloudCluster, false);
 
         }
     }
