@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include <ros/package.h>
+#include <tf/transform_listener.h>
 
 #include <pcl_conversions/pcl_conversions.h>
 #include <boost/shared_ptr.hpp>
@@ -9,7 +10,6 @@
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/surface/organized_fast_mesh.h>
 #include <pcl/common/centroid.h>
-#include <pcl_ros/point_cloud.h>
 #include <pcl/common/projection_matrix.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/surface/gp3.h>
@@ -24,6 +24,7 @@
 #include "cluster_extractor.h"
 
 pcl::PCDWriter writer;
+
 
 namespace scene_segmenter_node
 {
@@ -48,6 +49,8 @@ namespace scene_segmenter_node
         std::cout<<"update cloud";
 
         segmentedObjectsPublisher = node_handle.advertise<geometry_msgs::Pose>("segmented_objects",10);
+        //service
+        //ros::ServiceServer service = nh.advertiseService("segmented_objects_service", service_callback);
 
         ROS_INFO("scene_segmenter_node ready");
     }
@@ -55,9 +58,18 @@ namespace scene_segmenter_node
 
     void SceneSegmenterNode::pointCloudMessageCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
     {
+
+
         //convert cloud to pcl cloud2
         pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2());
         pcl_conversions::toPCL(*msg, *cloud);
+        std::cout<<msg->header<<std::endl;
+
+        //transform cloud to world coordinate
+        //tf::TransformListener listener;
+        //tf::StampedTransform transform;
+        //listener.lookupTransform("/head_mount_kinect_rgb_link", "/odom_combined", ros::Time(0), transform);
+        //bool success = pcl_ros::transformPointCloud(*cloud,*cloud,transform);
 
         //extract clusters
         ClusterExtractor *clusterExtractor = new ClusterExtractor();
@@ -104,6 +116,7 @@ namespace scene_segmenter_node
             writer.write<pcl::PointXYZ> (ss.str(), *cloudCluster, false);
 
         }
+        ros::Duration(5).sleep();
     }
 }
 

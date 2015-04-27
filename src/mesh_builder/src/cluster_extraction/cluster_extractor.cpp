@@ -65,7 +65,7 @@ void ClusterExtractor::computeClusters()
         *cloud_filtered = *cloud_f;
 
         // Add euclidean plane to computer clusters
-        cloudClusters.push_back(cloud_plane);
+        //cloudClusters.push_back(cloud_plane);
     }
 
     // Creating the KdTree object for the search method of the extraction

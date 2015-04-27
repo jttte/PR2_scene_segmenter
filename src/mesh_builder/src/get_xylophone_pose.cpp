@@ -19,7 +19,7 @@ int main(int argc, char **argv)
   if (client.call(srv))
   {
 
-    ROS_INFO("x: %f", (float)srv.response.pose.position.x);
+    //ROS_INFO("x: %f", (float)srv.response.pose.position.x);
   }
   else
   {
