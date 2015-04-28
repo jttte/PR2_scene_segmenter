@@ -2,10 +2,10 @@
 #include <ros/package.h>
 #include <tf/transform_listener.h>
 
-#include <pcl_conversions/pcl_conversions.h>
 #include <boost/shared_ptr.hpp>
-#include <pcl_ros/point_cloud.h>
 
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl_ros/point_cloud.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/surface/organized_fast_mesh.h>
@@ -14,16 +14,23 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/surface/gp3.h>
 
-#include "scene_segmenter/XylophonePose.h"
+ #include <pcl/ModelCoefficients.h>
+ #include <pcl/io/pcd_io.h>
+ #include <pcl/point_types.h>
+ #include <pcl/features/normal_3d.h>
+ #include <pcl/filters/extract_indices.h>
+ #include <pcl/filters/passthrough.h>
+ #include <pcl/sample_consensus/method_types.h>
+ #include <pcl/sample_consensus/model_types.h>
+ #include <pcl/segmentation/sac_segmentation.h>
 
 #include <sensor_msgs/PointCloud2.h>
 #include "std_msgs/String.h"
 #include "geometry_msgs/Pose.h"
-//#include "perception_msgs/SegmentedObject.h"
-//#include "perception_msgs/SegmentedObjectList.h"
-//#include "perception_msgs/ObjectCenterProperty.h"
 
 #include "cluster_extractor.h"
+#include "scene_segmenter/XylophonePose.h"
+
 
 pcl::PCDWriter writer;
 
@@ -34,35 +41,18 @@ namespace scene_segmenter_node
     {
         private:
             ros::NodeHandle node_handle;
-
+            ros::ServiceServer service;
             ros::Subscriber pointCloudSubscriber;
             void pointCloudMessageCallback(const sensor_msgs::PointCloud2::ConstPtr &msg);
             bool service_callback( scene_segmenter::XylophonePose::Request &req,
                       scene_segmenter::XylophonePose::Response &res );
+            geometry_msgs::Pose current_pose;
 
             //ros::Publisher segmentedObjectsPublisher;
 
         public:
             SceneSegmenterNode();
     };
-
-
-    bool service_callback(  scene_segmenter::XylophonePose::Request &req,
-                      scene_segmenter::XylophonePose::Response &res ){
-        std::cout<<"receive call";
-
-        geometry_msgs::Pose pose;
-        pose.orientation.w = 1.0;
-        pose.position.x = 1;
-        pose.position.y = 1;
-        pose.position.z = 1;
-
-        //res.pose = pose;
-        //pose = process_cloud();
-
-        return true;
-
-    }
 
     SceneSegmenterNode::SceneSegmenterNode(): node_handle("")
     {
@@ -71,15 +61,29 @@ namespace scene_segmenter_node
 
         //segmentedObjectsPublisher = node_handle.advertise<geometry_msgs::Pose>("segmented_objects",10);
         //service
-        ros::ServiceServer service = node_handle.advertiseService("get_xylophone_pose", service_callback);
+        service = node_handle.advertiseService("get_xylophone_pose", &SceneSegmenterNode::service_callback, this);
 
+        ros::spin();
         ROS_INFO("scene_segmenter_node ready");
     }
 
 
+    bool SceneSegmenterNode::service_callback(  scene_segmenter::XylophonePose::Request &req,
+                      scene_segmenter::XylophonePose::Response &res ){
+        std::cout<<"receive call";
+
+
+        res.pose = current_pose;
+        //pose = process_cloud();
+
+        return true;
+
+    }
+
+
+
     void SceneSegmenterNode::pointCloudMessageCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
     {
-
 
         //convert cloud to pcl cloud2
         pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2());
@@ -113,7 +117,11 @@ namespace scene_segmenter_node
                 max_size = cloudCluster->size();
                 idx = i;
                 find_object = true;
+                
             }
+std::stringstream ss;
+                ss<< "cloud_cluster_"<< i<<".pcd";
+                writer.write<pcl::PointXYZ> (ss.str(), *cloudCluster, false);
             
         }//end of cluster list loop
         
@@ -130,14 +138,15 @@ namespace scene_segmenter_node
                 pose.position.x = centroid.x();
                 pose.position.y = centroid.y();
                 pose.position.z = centroid.z();
-                segmentedObjectsPublisher.publish(pose);
+                //segmentedObjectsPublisher.publish(pose);
                 std::cout<<"x: "<<pose.position.x<<" y: "<<pose.position.y<<" z: "<<pose.position.z<<std::endl;
-            std::stringstream ss;
-            ss<< "cloud_cluster_"<< idx<<".pcd";
-            writer.write<pcl::PointXYZ> (ss.str(), *cloudCluster, false);
-
+            //std::stringstream ss;
+            //ss<< "cloud_cluster_"<< idx<<".pcd";
+            //writer.write<pcl::PointXYZ> (ss.str(), *cloudCluster, false);
+            current_pose = pose; 
         }
-    }
+
+    }//end of pointCloudMessageCallback
 }
 
 
@@ -147,7 +156,6 @@ int main(int argc, char **argv)
 
   ros::init(argc, argv, "scene_segmenter_node");
   scene_segmenter_node::SceneSegmenterNode node;
-  
-  ros::spin();
+
   return 0;
 }

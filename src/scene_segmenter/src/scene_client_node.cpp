@@ -4,46 +4,51 @@
 #include <sensor_msgs/PointCloud2.h>
 #include "std_msgs/String.h"
 #include "geometry_msgs/Pose.h"
-//#include "perception_msgs/SegmentedObject.h"
-//#include "perception_msgs/SegmentedObjectList.h"
-//#include "perception_msgs/ObjectCenterProperty.h"
 
-#include "cluster_extractor.h"
-#include <tf/transform_listener.h>
 
-#include <pcl_conversions/pcl_conversions.h>
-#include <boost/shared_ptr.hpp>
-#include <pcl_ros/point_cloud.h>
+#include "scene_segmenter/XylophonePose.h"
 
-#include <pcl/visualization/cloud_viewer.h>
-#include <pcl/io/vtk_lib_io.h>
-#include <pcl/surface/organized_fast_mesh.h>
-#include <pcl/common/centroid.h>
-#include <pcl/common/projection_matrix.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/surface/gp3.h>
-
-pcl::PCDWriter writer;
-
-void pointcloud_callback(geometry_msgs::Pose pose) {
-
-    //pose.position.x;
-    //pose.position.y;
-    //pose.position.z;
-    std::cout<<"get pose x: "<<pose.position.x<<" y: "<<pose.position.y<<" z: "<<pose.position.z<<std::endl;
-
-}
+#include "move_base.h"
+#include "math.h"
 
 
 int main(int argc, char **argv)
 {
+  float des_x = -0.0910179;
+  float des_y = 0.92953;
+  float des_z = 2.34948;
 
-  ros::init(argc, argv, "point_cloud_client_node");
+
+  ros::init(argc, argv, "get_xylophone_pose_node");
   ros::NodeHandle nh;
-  // create a templated subscriber
-  ros::Subscriber sub = nh.subscribe<geometry_msgs::Pose> ("segmented_objects", 1, pointcloud_callback);
+  ros::ServiceClient client = nh.serviceClient<scene_segmenter::XylophonePose>("get_xylophone_pose");
 
-  ros::spin();
+  scene_segmenter::XylophonePose srv;
+  bool done = false;
+  while(!done) {
+    if (client.call(srv))
+    {
+
+        ROS_INFO("get service");
+        std::cout<<"get pose x: "<<srv.response.pose.position.x<<" y: "<<srv.response.pose.position.y<<" z: "<<srv.response.pose.position.y<<std::endl;
+    } else {
+        ROS_ERROR("Failed to call service get_xylophone_pose");
+        return 1;
+    }
+
+    ros::init(argc, argv, "robot_driver");
+    RobotDriver driver(nh);
+    if(srv.response.pose.position.x < des_x) {
+        driver.turnOdom(false, M_PI/2);
+        driver.driveForwardOdom(des_x-srv.response.pose.position.x+0.2);
+        driver.turnOdom(true, M_PI/2);
+    }
+    if(srv.response.pose.position.z > des_z) {
+        driver.driveForwardOdom(srv.response.pose.position.z-des_z+0.8);
+    } 
+    done = true;
+  }//end of while
+
 
   return 0;
 }

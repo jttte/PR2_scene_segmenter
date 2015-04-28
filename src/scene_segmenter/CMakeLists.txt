@@ -4,7 +4,7 @@ project(scene_segmenter)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS sensor_msgs roscpp roslib geometry_msgs)
+find_package(catkin REQUIRED COMPONENTS sensor_msgs roscpp roslib geometry_msgs tf)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -60,10 +60,11 @@ add_service_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
+  geometry_msgs
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -75,7 +76,7 @@ add_service_files(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES scene_segmenter
   CATKIN_DEPENDS perception_msgs
 #  DEPENDS system_lib
@@ -108,7 +109,6 @@ add_executable(scene_client_node src/scene_client_node.cpp)
 #add_executable(test_scene_segmenter_node test/test_scene_segmenter_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
-## as an example, message headers may need to be generated before nodes
 # add_dependencies(scene_segmenter_node scene_segmenter_generate_messages_cpp)
 add_dependencies(scene_segmenter_node perception_msgs_generate_messages_cpp)
 add_dependencies(scene_client_node perception_msgs_generate_messages_cpp)
