@@ -9,6 +9,21 @@
 //#include "perception_msgs/ObjectCenterProperty.h"
 
 #include "cluster_extractor.h"
+#include <tf/transform_listener.h>
+
+#include <pcl_conversions/pcl_conversions.h>
+#include <boost/shared_ptr.hpp>
+#include <pcl_ros/point_cloud.h>
+
+#include <pcl/visualization/cloud_viewer.h>
+#include <pcl/io/vtk_lib_io.h>
+#include <pcl/surface/organized_fast_mesh.h>
+#include <pcl/common/centroid.h>
+#include <pcl/common/projection_matrix.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/surface/gp3.h>
+
+pcl::PCDWriter writer;
 
 void pointcloud_callback(geometry_msgs::Pose pose) {
 

@@ -1,15 +1,20 @@
 #include <ros/ros.h>
 #include <ros/package.h>
 
+#include <tf/transform_listener.h>
+
 #include <pcl_conversions/pcl_conversions.h>
 #include <boost/shared_ptr.hpp>
 #include <pcl_ros/point_cloud.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/io/vtk_lib_io.h>
+
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/io/vtk_lib_io.h>
 #include <pcl/surface/organized_fast_mesh.h>
+#include <pcl/common/centroid.h>
 #include <pcl/common/projection_matrix.h>
-#include "pcl_ros/point_cloud.h"
+#include <pcl/io/pcd_io.h>
+#include <pcl/surface/gp3.h>
+
 
 #include <sensor_msgs/PointCloud2.h>
 #include "mesh_builder/MeshCloud.h"
@@ -18,9 +23,17 @@
 #include "geometry_msgs/Pose.h"
 #include "sensor_msgs/PointCloud2.h"
 
+#include "cluster_extractor.h"
+
+pcl::PCDWriter writer;
+pcl::PCLPointCloud2::Ptr current_cloud;
+
+void process_cloud()
+{
 
 
-sensor_msgs::PointCloud2 current_cloud;
+        
+}
 
 bool service_callback( mesh_builder::MeshCloud::Request &req,
                       mesh_builder::MeshCloud::Response &res ){
@@ -32,18 +45,21 @@ bool service_callback( mesh_builder::MeshCloud::Request &req,
     pose.position.y = 1;
     pose.position.z = 1;
 
-    res.pose = pose;
-
-    //sensor_msgs::PointCloud2 processed_cloud = current_cloud;
+    //res.pose = pose;
+    //pose = process_cloud();
 
     return true;
 
 }
 
-void pointcloud_callback(sensor_msgs::PointCloud2 pc) {
+void pointcloud_callback(const sensor_msgs::PointCloud2::ConstPtr &msg) {
 
-    current_cloud = pc;
+    pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2());
+    pcl_conversions::toPCL(*msg, *cloud);
+    //std::cout<<msg->header<<std::endl;
+    //current_cloud = cloud;
     std::cout<<"update cloud"<<std::endl;
+    
 
 }
 
@@ -57,11 +73,10 @@ int main(int argc, char **argv)
   // create a templated subscriber
   ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2> ("/head_mount_kinect/depth/points", 1, pointcloud_callback);
 
-  ros::spin();
-
+  
   ros::ServiceServer service = nh.advertiseService("get_xylophone_pose", service_callback);
-  //pub.publish("test");
-
+  ros::spin();
+  //current_cloud = new pcl::PCLPointCloud2();
 
   return 0;
 }

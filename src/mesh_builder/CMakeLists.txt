@@ -106,29 +106,29 @@ add_definitions(${PCL_DEFINITIONS})
 # )
 
 ## Declare a cpp executable
-add_executable(mesh_builder_node src/main.cpp src/cluster_extraction/cluster_extractor.cpp)
+#add_executable(mesh_builder_node src/main.cpp src/cluster_extraction/cluster_extractor.cpp)
 add_executable(point_cloud_node src/listen_pc.cpp src/cluster_extraction/cluster_extractor.cpp)
-#add_executable(get_xylophone_pose src/get_xylophone_pose.cpp src/cluster_extraction/cluster_extractor.cpp)
+add_executable(get_xylophone_pose src/get_xylophone_pose.cpp src/cluster_extraction/cluster_extractor.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(mesh_builder_node mesh_builder_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(mesh_builder_node
-   ${catkin_LIBRARIES}
-   ${PCL_LIBRARIES}
-)
+#target_link_libraries(mesh_builder_node
+#   ${catkin_LIBRARIES}
+#   ${PCL_LIBRARIES}
+#)
 
 target_link_libraries(point_cloud_node
    ${catkin_LIBRARIES}
    ${PCL_LIBRARIES}
 )
 
-#target_link_libraries(get_xylophone_pose
-#   ${catkin_LIBRARIES}
-#   ${PCL_LIBRARIES}
-#)
+target_link_libraries(get_xylophone_pose
+   ${catkin_LIBRARIES}
+   ${PCL_LIBRARIES}
+)
 
 #############
 ## Install ##

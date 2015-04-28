@@ -47,11 +47,10 @@ find_package(PCL REQUIRED)
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+   FILES
+   XylophonePose.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -112,7 +111,7 @@ add_executable(scene_client_node src/scene_client_node.cpp)
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(scene_segmenter_node scene_segmenter_generate_messages_cpp)
 add_dependencies(scene_segmenter_node perception_msgs_generate_messages_cpp)
-#add_dependencies(scene_client_node perception_msgs_generate_messages_cpp)
+add_dependencies(scene_client_node perception_msgs_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(scene_segmenter_node

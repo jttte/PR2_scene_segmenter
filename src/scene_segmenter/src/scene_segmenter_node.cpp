@@ -14,6 +14,8 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/surface/gp3.h>
 
+#include "scene_segmenter/XylophonePose.h"
+
 #include <sensor_msgs/PointCloud2.h>
 #include "std_msgs/String.h"
 #include "geometry_msgs/Pose.h"
@@ -35,22 +37,41 @@ namespace scene_segmenter_node
 
             ros::Subscriber pointCloudSubscriber;
             void pointCloudMessageCallback(const sensor_msgs::PointCloud2::ConstPtr &msg);
+            bool service_callback( scene_segmenter::XylophonePose::Request &req,
+                      scene_segmenter::XylophonePose::Response &res );
 
-            ros::Publisher segmentedObjectsPublisher;
+            //ros::Publisher segmentedObjectsPublisher;
 
         public:
             SceneSegmenterNode();
     };
 
 
+    bool service_callback(  scene_segmenter::XylophonePose::Request &req,
+                      scene_segmenter::XylophonePose::Response &res ){
+        std::cout<<"receive call";
+
+        geometry_msgs::Pose pose;
+        pose.orientation.w = 1.0;
+        pose.position.x = 1;
+        pose.position.y = 1;
+        pose.position.z = 1;
+
+        //res.pose = pose;
+        //pose = process_cloud();
+
+        return true;
+
+    }
+
     SceneSegmenterNode::SceneSegmenterNode(): node_handle("")
     {
         pointCloudSubscriber = node_handle.subscribe("/head_mount_kinect/depth/points", 10, &SceneSegmenterNode::pointCloudMessageCallback, this);
         std::cout<<"update cloud";
 
-        segmentedObjectsPublisher = node_handle.advertise<geometry_msgs::Pose>("segmented_objects",10);
+        //segmentedObjectsPublisher = node_handle.advertise<geometry_msgs::Pose>("segmented_objects",10);
         //service
-        //ros::ServiceServer service = nh.advertiseService("segmented_objects_service", service_callback);
+        ros::ServiceServer service = node_handle.advertiseService("get_xylophone_pose", service_callback);
 
         ROS_INFO("scene_segmenter_node ready");
     }
@@ -116,7 +137,6 @@ namespace scene_segmenter_node
             writer.write<pcl::PointXYZ> (ss.str(), *cloudCluster, false);
 
         }
-        ros::Duration(5).sleep();
     }
 }
 
@@ -126,10 +146,8 @@ int main(int argc, char **argv)
 {
 
   ros::init(argc, argv, "scene_segmenter_node");
-  ros::NodeHandle nh;
-
   scene_segmenter_node::SceneSegmenterNode node;
-
+  
   ros::spin();
   return 0;
 }
