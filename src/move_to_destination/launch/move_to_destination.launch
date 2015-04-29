@@ -1,0 +1,9 @@
+<launch>
+
+  <!--Keep this if you did this assigment using C++-->
+  <!--<node name="move_to_destination" pkg="move_to_destination" type="move_to_destination"/>-->
+
+  <!--Uncomment this if you did this assignment using python-->
+  <node name="move_to_destination" pkg="move_to_destination" type="move_to_destination"/>
+
+</launch>
