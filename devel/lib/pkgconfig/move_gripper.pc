@@ -1,0 +1,8 @@
+prefix=/home/cl3295/robot-test/devel
+
+Name: move_gripper
+Description: Description of move_gripper
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/cl3295/robot-test/devel/lib 
+Requires: 

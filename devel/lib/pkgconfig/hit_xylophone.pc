@@ -1,0 +1,8 @@
+prefix=/home/cl3295/robot-test/devel
+
+Name: hit_xylophone
+Description: Description of hit_xylophone
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/cl3295/robot-test/devel/lib 
+Requires: 

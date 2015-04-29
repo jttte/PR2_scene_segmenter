@@ -1,0 +1,8 @@
+prefix=/home/cl3295/scene_segment_test/devel
+
+Name: pickup_object
+Description: Description of pickup_object
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/cl3295/scene_segment_test/devel/lib 
+Requires: 
