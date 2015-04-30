@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS sensor_msgs roscpp roslib geometry_msgs 
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-find_package(PCL REQUIRED)
+find_package(PCL REQUIRED) 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -78,7 +78,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES scene_segmenter
-  CATKIN_DEPENDS perception_msgs
+  CATKIN_DEPENDS perception_msgs pcl_ros
 #  DEPENDS system_lib
 )
 

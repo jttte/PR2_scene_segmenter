@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <tf/transform_listener.h>
+#include<pcl_ros/transforms.h>
 
 #include <boost/shared_ptr.hpp>
 
@@ -87,14 +88,20 @@ namespace scene_segmenter_node
 
         //convert cloud to pcl cloud2
         pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2());
-        pcl_conversions::toPCL(*msg, *cloud);
-        std::cout<<msg->header<<std::endl;
+        //pcl_conversions::toPCL(*msg, *cloud);
+        //std::cout<<msg->header<<std::endl;
+
+        //transform PCLcloud2 to PCLcloud
+
+        //pcl::PointCloud<pcl::PointXYZ> pcl_cloud;
+        //pcl::fromPCLPointCloud2(*cloud, pcl_cloud);
 
         //transform cloud to world coordinate
-        //tf::TransformListener listener;
-        //tf::StampedTransform transform;
-        //listener.lookupTransform("/head_mount_kinect_rgb_link", "/odom_combined", ros::Time(0), transform);
-        //bool success = pcl_ros::transformPointCloud(*cloud,*cloud,transform);
+        tf::TransformListener listener;
+        tf::StampedTransform transform;
+        sensor_msgs::PointCloud2 cloud_out;
+        listener.lookupTransform("/odom_combined", msg->header.frame_id, ros::Time(0), transform);
+        bool success = pcl_ros::transformPointCloud("/odom_combined", *msg, cloud_out, listener);
 
         //extract clusters
         ClusterExtractor *clusterExtractor = new ClusterExtractor();
