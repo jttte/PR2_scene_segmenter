@@ -86,8 +86,8 @@ namespace scene_segmenter_node
     void SceneSegmenterNode::pointCloudMessageCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
     {
 
-        //convert cloud to pcl cloud2
-        pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2());
+        
+        //pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2());
         //pcl_conversions::toPCL(*msg, *cloud);
         //std::cout<<msg->header<<std::endl;
 
@@ -99,9 +99,13 @@ namespace scene_segmenter_node
         //transform cloud to world coordinate
         tf::TransformListener listener;
         tf::StampedTransform transform;
-        sensor_msgs::PointCloud2 cloud_out;
+        sensor_msgs::PointCloud2::Ptr cloud_out;
         listener.lookupTransform("/odom_combined", msg->header.frame_id, ros::Time(0), transform);
-        bool success = pcl_ros::transformPointCloud("/odom_combined", *msg, cloud_out, listener);
+        bool success = pcl_ros::transformPointCloud("/odom_combined", *msg, *cloud_out, listener);
+
+        //cloud msg to cloud     
+        pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2());
+        pcl_conversions::toPCL(*cloud_out, *cloud);
 
         //extract clusters
         ClusterExtractor *clusterExtractor = new ClusterExtractor();
