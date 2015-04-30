@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <tf/transform_listener.h>
-#include<pcl_ros/transforms.h>
+#include <pcl_ros/transforms.h>
 
 #include <boost/shared_ptr.hpp>
 
@@ -14,16 +14,6 @@
 #include <pcl/common/projection_matrix.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/surface/gp3.h>
-
- #include <pcl/ModelCoefficients.h>
- #include <pcl/io/pcd_io.h>
- #include <pcl/point_types.h>
- #include <pcl/features/normal_3d.h>
- #include <pcl/filters/extract_indices.h>
- #include <pcl/filters/passthrough.h>
- #include <pcl/sample_consensus/method_types.h>
- #include <pcl/sample_consensus/model_types.h>
- #include <pcl/segmentation/sac_segmentation.h>
 
 #include <sensor_msgs/PointCloud2.h>
 #include "std_msgs/String.h"
@@ -101,7 +91,7 @@ namespace scene_segmenter_node
         tf::StampedTransform transform;
         sensor_msgs::PointCloud2::Ptr cloud_out;
         listener.lookupTransform("/odom_combined", msg->header.frame_id, ros::Time::now(), transform);
-        bool success = pcl_ros::transformPointCloud("/odom_combined", *msg, *cloud_out, listener);
+        pcl_ros::transformPointCloud("/odom_combined", *msg, *cloud_out, listener);
 
         //cloud msg to cloud     
         pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2());
