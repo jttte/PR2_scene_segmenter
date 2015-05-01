@@ -90,8 +90,8 @@ namespace scene_segmenter_node
         tf::TransformListener listener;
         tf::StampedTransform transform;
         sensor_msgs::PointCloud2::Ptr cloud_out;
-        listener.lookupTransform("/odom_combined", msg->header.frame_id, ros::Time::now(), transform);
-        pcl_ros::transformPointCloud("/odom_combined", *msg, *cloud_out, listener);
+        listener.lookupTransform("/odom_frame", msg->header.frame_id, ros::Time::now(), transform);
+        pcl_ros::transformPointCloud("/odom_frame", *msg, *cloud_out, listener);
 
         //cloud msg to cloud     
         pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2());

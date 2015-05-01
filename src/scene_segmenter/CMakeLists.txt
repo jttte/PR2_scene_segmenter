@@ -4,11 +4,11 @@ project(scene_segmenter)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS sensor_msgs roscpp roslib geometry_msgs tf)
+find_package(catkin REQUIRED COMPONENTS sensor_msgs roscpp roslib geometry_msgs tf pcl_ros)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-find_package(PCL REQUIRED) 
+find_package(PCL REQUIRED)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -45,6 +45,7 @@ find_package(PCL REQUIRED)
 #   Message1.msg
 #   Message2.msg
 # )
+
 
 ## Generate services in the 'srv' folder
 add_service_files(
@@ -97,14 +98,9 @@ include_directories(
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
-## Declare a cpp library
-add_library(scene_segmenter
-   src/cluster_extraction/cluster_extractor.cpp
- )
-
 ## Declare a cpp executable
-add_executable(scene_segmenter_node src/scene_segmenter_node.cpp)
-add_executable(scene_client_node src/scene_client_node.cpp)
+add_executable(scene_segmenter_node src/scene_segmenter_node.cpp  src/cluster_extraction/cluster_extractor.cpp)
+add_executable(scene_client_node src/scene_client_node.cpp  src/cluster_extraction/cluster_extractor.cpp)
 
 #add_executable(test_scene_segmenter_node test/test_scene_segmenter_node.cpp)
 
@@ -115,20 +111,18 @@ add_dependencies(scene_client_node perception_msgs_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(scene_segmenter_node
- 	scene_segmenter
-   	${catkin_LIBRARIES} 
+   	${catkin_LIBRARIES}
    	${PCL_LIBRARIES}
- )
+)
 
- target_link_libraries(scene_client_node
- 	scene_segmenter
-   	${catkin_LIBRARIES} 
+target_link_libraries(scene_client_node
+   	${catkin_LIBRARIES}
    	${PCL_LIBRARIES}
  )
 
 # target_link_libraries(test_scene_segmenter_node
 # 	scene_segmenter
-#   	${catkin_LIBRARIES} 
+#   	${catkin_LIBRARIES}
 #   	${PCL_LIBRARIES}
 #   	gtest
 # )
@@ -180,3 +174,4 @@ add_dependencies(scene_client_node perception_msgs_generate_messages_cpp)
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
