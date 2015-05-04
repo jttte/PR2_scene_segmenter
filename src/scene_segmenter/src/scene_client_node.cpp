@@ -14,9 +14,9 @@
 
 int main(int argc, char **argv)
 {
-  float des_x = -0.0910179;
-  float des_y = 0.92953;
-  float des_z = 2.34948;
+  float des_x = 0.09;
+  float des_y = 0.77;
+  float des_z = 2.32;
 
 
   ros::init(argc, argv, "get_xylophone_pose_node");
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 
   scene_segmenter::XylophonePose srv;
   bool done = false;
-  while(!done) {
+  //while(!done) {
     if (client.call(srv))
     {
 
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
         ROS_ERROR("Failed to call service get_xylophone_pose");
         return 1;
     }
-
+/*
     ros::init(argc, argv, "robot_driver");
     RobotDriver driver(nh);
     if(srv.response.pose.position.x < des_x) {
@@ -46,8 +46,9 @@ int main(int argc, char **argv)
     if(srv.response.pose.position.z > des_z) {
         driver.driveForwardOdom(srv.response.pose.position.z-des_z+0.8);
     } 
+*/
     done = true;
-  }//end of while
+  //}//end of while
 
 
   return 0;

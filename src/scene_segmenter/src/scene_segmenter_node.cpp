@@ -24,8 +24,6 @@
 
 
 pcl::PCDWriter writer;
-
-
 namespace scene_segmenter_node
 {
     class SceneSegmenterNode
@@ -38,8 +36,7 @@ namespace scene_segmenter_node
             bool service_callback( scene_segmenter::XylophonePose::Request &req,
                       scene_segmenter::XylophonePose::Response &res );
             geometry_msgs::Pose current_pose;
-
-            //ros::Publisher segmentedObjectsPublisher;
+            sensor_msgs::PointCloud2 current_cloud;
 
         public:
             SceneSegmenterNode();
@@ -50,7 +47,6 @@ namespace scene_segmenter_node
         pointCloudSubscriber = node_handle.subscribe("/head_mount_kinect/depth/points", 10, &SceneSegmenterNode::pointCloudMessageCallback, this);
         std::cout<<"update cloud";
 
-        //segmentedObjectsPublisher = node_handle.advertise<geometry_msgs::Pose>("segmented_objects",10);
         //service
         service = node_handle.advertiseService("get_xylophone_pose", &SceneSegmenterNode::service_callback, this);
 
@@ -61,41 +57,20 @@ namespace scene_segmenter_node
 
     bool SceneSegmenterNode::service_callback(  scene_segmenter::XylophonePose::Request &req,
                       scene_segmenter::XylophonePose::Response &res ){
-        std::cout<<"receive call";
 
-
-        res.pose = current_pose;
-        //pose = process_cloud();
-
-        return true;
-
-    }
-
-
-
-    void SceneSegmenterNode::pointCloudMessageCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
-    {
-
-        
-        //pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2());
-        //pcl_conversions::toPCL(*msg, *cloud);
-        //std::cout<<msg->header<<std::endl;
-
-        //transform PCLcloud2 to PCLcloud
-
-        //pcl::PointCloud<pcl::PointXYZ> pcl_cloud;
-        //pcl::fromPCLPointCloud2(*cloud, pcl_cloud);
+        std::cout<<"receive call"<<std::endl;
 
         //transform cloud to world coordinate
         tf::TransformListener listener;
-        tf::StampedTransform transform;
-        sensor_msgs::PointCloud2::Ptr cloud_out;
-        listener.lookupTransform("/odom_frame", msg->header.frame_id, ros::Time::now(), transform);
-        pcl_ros::transformPointCloud("/odom_frame", *msg, *cloud_out, listener);
+        sensor_msgs::PointCloud2 cloud_out;
+        //listener.waitForTransform("/base_link", current_cloud.header.frame_id, current_cloud.header.stamp, ros::Duration(0.5));
+        listener.waitForTransform("/base_link", current_cloud.header.frame_id, ros::Time::now(), ros::Duration(0.5));
+        pcl_ros::transformPointCloud("/base_link", current_cloud, cloud_out, listener);
 
         //cloud msg to cloud     
         pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2());
-        pcl_conversions::toPCL(*cloud_out, *cloud);
+        pcl_conversions::toPCL(cloud_out, *cloud);
+        //pcl_conversions::toPCL(current_cloud, *cloud);
 
         //extract clusters
         ClusterExtractor *clusterExtractor = new ClusterExtractor();
@@ -127,8 +102,7 @@ std::stringstream ss;
         }//end of cluster list loop
         
         if(find_object == true) {
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloudCluster (cloudClusters.at(idx));
-            
+                pcl::PointCloud<pcl::PointXYZ>::Ptr cloudCluster (cloudClusters.at(idx));
 
                 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>());
                 pcl::copyPointCloud(*cloudCluster,*cloud_xyz);
@@ -139,7 +113,6 @@ std::stringstream ss;
                 pose.position.x = centroid.x();
                 pose.position.y = centroid.y();
                 pose.position.z = centroid.z();
-                //segmentedObjectsPublisher.publish(pose);
                 std::cout<<"x: "<<pose.position.x<<" y: "<<pose.position.y<<" z: "<<pose.position.z<<std::endl;
             //std::stringstream ss;
             //ss<< "cloud_cluster_"<< idx<<".pcd";
@@ -147,16 +120,26 @@ std::stringstream ss;
             current_pose = pose; 
         }
 
+        res.pose = current_pose;
+        return true;
+
+    }//end of service_allback
+
+    void SceneSegmenterNode::pointCloudMessageCallback(const sensor_msgs::PointCloud2::ConstPtr &msg)
+    {
+        if(!msg) return;
+        current_cloud = *msg;
+        std::cout<<"update cloud"<<std::endl;
+
     }//end of pointCloudMessageCallback
 }
-
 
 
 int main(int argc, char **argv) 
 {
 
-  ros::init(argc, argv, "scene_segmenter_node");
-  scene_segmenter_node::SceneSegmenterNode node;
+    ros::init(argc, argv, "scene_segmenter_node");
+    scene_segmenter_node::SceneSegmenterNode node;
 
-  return 0;
+    return 0;
 }

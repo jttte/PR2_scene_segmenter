@@ -14,15 +14,20 @@
 
   <!-- Add table to the world -->
   <node name="spawn_table" pkg="gazebo_ros" type="spawn_model" 
-   args="-urdf -file $(find system_launch)/models/table.urdf -model table -x 2.47 -y 0"
+   args="-urdf -file $(find system_launch)/models/table.urdf -model table -x 2.474217 -y -0.009251"
    respawn="false" output="screen" />
 
 
    <!-- Add xylophone to the world -->
   <node name="xylphone" pkg="gazebo_ros" type="spawn_model" 
-   args="-urdf -file $(find system_launch)/models/xylphone.urdf -model xylophone -x 2.21 -y -0 -z 0.62"
+   args="-urdf -file $(find system_launch)/models/xylphone.urdf -model xylophone -x 2.229781 -y -0.460459 -z 0.620934"
    respawn="false" output="screen" />
 
 
+
+  <!-- Add stick can to the world -->
+  <node name="spawn_object" pkg="gazebo_ros" type="spawn_model" 
+   args="-urdf -file $(find system_launch)/models/stick.urdf -model stick -x -0.067 -y -0.0045 -z 0.85"
+   respawn="false" output="screen" />
 
 </launch>
