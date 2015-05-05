@@ -16,6 +16,7 @@
 #include <pcl/surface/gp3.h>
 
 #include <sensor_msgs/PointCloud2.h>
+#include <sensor_msgs/point_cloud_conversion.h>
 #include "std_msgs/String.h"
 #include "geometry_msgs/Pose.h"
 
@@ -62,10 +63,27 @@ namespace scene_segmenter_node
 
         //transform cloud to world coordinate
         tf::TransformListener listener;
+        tf::StampedTransform transform;
         sensor_msgs::PointCloud2 cloud_out;
         //listener.waitForTransform("/base_link", current_cloud.header.frame_id, current_cloud.header.stamp, ros::Duration(0.5));
-        listener.waitForTransform("/base_link", current_cloud.header.frame_id, ros::Time::now(), ros::Duration(0.5));
-        pcl_ros::transformPointCloud("/base_link", current_cloud, cloud_out, listener);
+        //listener.waitForTransform("/base_link", current_cloud.header.frame_id, ros::Time::now(), ros::Duration(0.5));
+        //listener.lookupTransform("/base_link", current_cloud.header.frame_id, ros::Time::now(), transform);
+        //pcl_ros::transformPointCloud("/base_link", current_cloud, cloud_out, listener);
+
+        sensor_msgs::PointCloud ptcld1;
+        // convert pc2 to pc
+        sensor_msgs::convertPointCloud2ToPointCloud(current_cloud,ptcld1);
+
+        sensor_msgs::PointCloud convertedPtcld1;
+
+        ros::Time now = ros::Time::now();
+            listener.waitForTransform("/base_link", current_cloud.header.frame_id,
+                              now, ros::Duration(3.0));
+        listener.transformPointCloud("/base_link",ptcld1,convertedPtcld1);
+
+        //sensor_msgs::PointCloud2 convertedMessagePointCloud;
+        sensor_msgs::convertPointCloudToPointCloud2(convertedPtcld1,
+                        cloud_out);
 
         //cloud msg to cloud     
         pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2());
